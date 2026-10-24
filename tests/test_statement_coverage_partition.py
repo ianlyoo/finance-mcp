@@ -2,10 +2,10 @@
 
 from dataclasses import replace
 
-from finance_mcp import portfolio_engine as engine
-from finance_mcp import statement_import as m
-from finance_mcp.portfolio_model import FxRates, Transaction, TxType
-from finance_mcp.portfolio_sources import Collection
+from investmcp import portfolio_engine as engine
+from investmcp import statement_import as m
+from investmcp.portfolio_model import FxRates, Transaction, TxType
+from investmcp.portfolio_sources import Collection
 
 
 def test_present_api_preserves_equal_occurrences_without_unique_ids(tmp_path):

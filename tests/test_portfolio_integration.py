@@ -19,8 +19,8 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from finance_mcp.portfolio_sources import PortfolioCollector, Providers
-from finance_mcp.portfolio_store import NavStore
+from investmcp.portfolio_sources import PortfolioCollector, Providers
+from investmcp.portfolio_store import NavStore
 
 TODAY = "2026-10-05"
 YEAR = TODAY[:4]
@@ -160,7 +160,7 @@ class FakeKIS:
 @pytest.fixture(autouse=True)
 def local_clock(monkeypatch, request):
     """Pin both the host calendar and UTC collection time at any test-run hour."""
-    from finance_mcp import portfolio_engine, portfolio_sources, portfolio_store, server
+    from investmcp import portfolio_engine, portfolio_sources, portfolio_store, server
 
     hour = getattr(request, "param", "12:00")
     instant = datetime.fromisoformat(f"{TODAY}T{hour}:00").replace(
@@ -193,7 +193,7 @@ def local_clock(monkeypatch, request):
 @pytest.fixture
 def wired(monkeypatch, tmp_path):
     """server module with the collector and NAV store pointed at fakes."""
-    from finance_mcp import server
+    from investmcp import server
 
     collector = PortfolioCollector(
         Providers(
@@ -374,7 +374,7 @@ def test_account_health_reports_all_ok(wired):
 @pytest.mark.parametrize("local_clock", ["00:30"], indirect=True)
 def test_kst_midnight_break_reaches_realized_and_performance(wired):
     server, _ = wired
-    from finance_mcp.portfolio_sources import _now
+    from investmcp.portfolio_sources import _now
 
     assert _now() == "2026-10-04T15:30:00+00:00"
     realized = server.get_realized_pnl(period="YTD")["data"]

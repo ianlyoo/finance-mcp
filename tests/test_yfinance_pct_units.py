@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from finance_mcp.yfinance_metrics import dividend_yield_pct, pct, percent_value
+from investmcp.yfinance_metrics import dividend_yield_pct, pct, percent_value
 
 
 def test_info_fractions_convert_even_above_one():
@@ -31,7 +31,7 @@ def test_dividend_yield_fallback_units():
 
 
 def test_tools_wire_fraction_fields(monkeypatch):
-    from finance_mcp import yfinance_api
+    from investmcp import yfinance_api
 
     info = {
         "returnOnEquity": 1.1721,

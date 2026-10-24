@@ -10,7 +10,7 @@ from typing import Any
 import httpx
 import pytest
 
-from finance_mcp import sec_api, server
+from investmcp import sec_api, server
 
 
 def peak_second(timestamps):
@@ -71,7 +71,7 @@ class Clock:
 
 @pytest.mark.asyncio
 async def test_sec_json_and_text_share_budget_across_clients(monkeypatch):
-    from finance_mcp import provider_pacing
+    from investmcp import provider_pacing
 
     clock, sent = Clock(), []
     monkeypatch.setattr(
@@ -105,7 +105,7 @@ async def test_sec_json_and_text_share_budget_across_clients(monkeypatch):
 
 @pytest.mark.parametrize("status", [403, 429, 503])
 def test_sec_cooldown_covers_other_clients_and_both_response_types(monkeypatch, status):
-    from finance_mcp import provider_pacing
+    from investmcp import provider_pacing
 
     clock, sent = Clock(), []
     monkeypatch.setattr(
@@ -139,7 +139,7 @@ def test_sec_cooldown_covers_other_clients_and_both_response_types(monkeypatch, 
 async def test_eight_toss_reads_keep_group_caps_and_single_refresh(
     monkeypatch, shared_credentials
 ):
-    from finance_mcp import provider_pacing, toss_api
+    from investmcp import provider_pacing, toss_api
 
     clock, sent = Clock(), []
     monkeypatch.setattr(
@@ -191,8 +191,8 @@ async def test_eight_toss_reads_keep_group_caps_and_single_refresh(
 
 
 def test_toss_admission_honors_existing_nav_deadline(monkeypatch):
-    from finance_mcp import provider_pacing, toss_api
-    from finance_mcp.portfolio_sources import _NAV_READ_DEADLINE
+    from investmcp import provider_pacing, toss_api
+    from investmcp.portfolio_sources import _NAV_READ_DEADLINE
 
     budget = provider_pacing.RequestBudget(10)
     monkeypatch.setitem(toss_api._RATE_BUDGETS, "ACCOUNT", budget)
@@ -226,9 +226,9 @@ async def test_eight_binance_public_and_signed_calls_share_admission(
 ):
     from urllib.parse import parse_qs
 
-    from finance_mcp import provider_pacing
-    from finance_mcp.binance_futures_api import BinanceFuturesClient
-    from finance_mcp.crypto_futures_accounts import BinanceAccountClient
+    from investmcp import provider_pacing
+    from investmcp.binance_futures_api import BinanceFuturesClient
+    from investmcp.crypto_futures_accounts import BinanceAccountClient
 
     clock, sent = Clock(), []
     monkeypatch.setattr(
@@ -282,9 +282,9 @@ async def test_eight_binance_public_and_signed_calls_share_admission(
 def test_binance_cooldown_is_shared_in_both_directions(
     monkeypatch, signing_key, public_first, status
 ):
-    from finance_mcp import provider_pacing
-    from finance_mcp.binance_futures_api import BinanceAPIError, BinanceFuturesClient
-    from finance_mcp.crypto_futures_accounts import BinanceAccountClient, FuturesError
+    from investmcp import provider_pacing
+    from investmcp.binance_futures_api import BinanceAPIError, BinanceFuturesClient
+    from investmcp.crypto_futures_accounts import BinanceAccountClient, FuturesError
 
     clock, sent = Clock(), []
     monkeypatch.setattr(
@@ -342,7 +342,7 @@ async def test_eight_yfinance_calls_remain_serial(monkeypatch):
 
     import yfinance as yf
 
-    from finance_mcp.yfinance_api import YFinanceClient
+    from investmcp.yfinance_api import YFinanceClient
 
     lock = threading.Lock()
     active = peak = calls = 0
@@ -369,7 +369,7 @@ async def test_eight_yfinance_calls_remain_serial(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_eight_hyperliquid_reads_keep_existing_weight_spacing():
-    from finance_mcp.crypto_futures_accounts import HyperliquidAccountClient
+    from investmcp.crypto_futures_accounts import HyperliquidAccountClient
 
     stamps = []
     address = "0x" + "0" * 40

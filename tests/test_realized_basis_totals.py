@@ -4,9 +4,9 @@ from dataclasses import replace
 
 import pytest
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp.portfolio_model import CashBalance, FxRates, Transaction, TxType
-from finance_mcp.portfolio_sources import Collection
+from investmcp import portfolio_engine as pe
+from investmcp.portfolio_model import CashBalance, FxRates, Transaction, TxType
+from investmcp.portfolio_sources import Collection
 
 START, END = "2026-02-01", "2026-02-28"
 FX = FxRates({"USD": 1464.3, "JPY": 9})
@@ -142,7 +142,7 @@ def test_incomplete_sales_outside_period_do_not_taint_current_totals():
 
 
 def test_summary_performance_and_nav_consumers_preserve_null_and_subsets(monkeypatch):
-    from finance_mcp import server
+    from investmcp import server
 
     rows = mixed_sales()
     ledger = Collection(transactions=rows, health={"synthetic": {"status": "ok"}})

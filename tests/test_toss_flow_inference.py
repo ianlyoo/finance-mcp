@@ -6,8 +6,8 @@ from decimal import Decimal
 
 import pytest
 
-from finance_mcp.daily_nav import TOSS_CASH_BASIS
-from finance_mcp.toss_flow_inference import (
+from investmcp.daily_nav import TOSS_CASH_BASIS
+from investmcp.toss_flow_inference import (
     infer_toss_flows,
     toss_interval_flows,
     toss_residual_diagnostics,
@@ -384,7 +384,7 @@ def test_missing_db_is_not_created(tmp_path):
 def test_capture_and_read_adapter_is_immutable(tmp_path, monkeypatch):
     from test_toss_nav import END, START, capture
 
-    from finance_mcp.portfolio_ledger import LedgerStore
+    from investmcp.portfolio_ledger import LedgerStore
 
     first = capture(tmp_path, monkeypatch, day=START)
     second = capture(tmp_path, monkeypatch, day=END)
@@ -526,7 +526,7 @@ def test_ambiguous_transfer_references_do_not_pick_first():
 
 
 def test_ledger_decimal_canonicalization_is_lossless():
-    from finance_mcp.portfolio_ledger import number
+    from investmcp.portfolio_ledger import number
 
     value = "12345678901234567890.1234567890"
     assert number(value) == "12345678901234567890.123456789"

@@ -6,9 +6,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from finance_mcp.portfolio_ledger import LedgerStore
-from finance_mcp.portfolio_model import FxRates
-from finance_mcp.portfolio_sources import Collection
+from investmcp.portfolio_ledger import LedgerStore
+from investmcp.portfolio_model import FxRates
+from investmcp.portfolio_sources import Collection
 
 START, END = "2025-01-01", "2026-01-01"
 ROUTES = (
@@ -31,7 +31,7 @@ def millis(day):
 
 @pytest.fixture
 def wired(tmp_path, monkeypatch):
-    from finance_mcp import server
+    from investmcp import server
 
     db = tmp_path / "synthetic.db"
     ledger = LedgerStore(db)
@@ -388,7 +388,7 @@ def test_actual_midperiod_xirr_dates_and_interval_end_twr(wired):
 
 
 def test_read_only_does_not_create_database_or_change_ledger(wired, tmp_path):
-    from finance_mcp.ledger_returns import read_flows
+    from investmcp.ledger_returns import read_flows
 
     missing = tmp_path / "missing.db"
     assert read_flows(missing, START, END) is None

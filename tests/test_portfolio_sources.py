@@ -9,8 +9,8 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from finance_mcp.kinvest_common import NotConfiguredError
-from finance_mcp.portfolio_sources import PortfolioCollector, Providers
+from investmcp.kinvest_common import NotConfiguredError
+from investmcp.portfolio_sources import PortfolioCollector, Providers
 
 TOSS_HOLDINGS = {
     "result": {

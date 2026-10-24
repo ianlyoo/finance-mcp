@@ -9,12 +9,12 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
-from finance_mcp.ledger_returns import read_flows, scope_navs
-from finance_mcp.portfolio_engine import compute_performance, summarize_portfolio
-from finance_mcp.portfolio_ledger import LedgerStore
-from finance_mcp.portfolio_model import FxRates
-from finance_mcp.portfolio_sources import PortfolioCollector, Providers
-from finance_mcp.portfolio_store import NavStore, snapshot_summary
+from investmcp.ledger_returns import read_flows, scope_navs
+from investmcp.portfolio_engine import compute_performance, summarize_portfolio
+from investmcp.portfolio_ledger import LedgerStore
+from investmcp.portfolio_model import FxRates
+from investmcp.portfolio_sources import PortfolioCollector, Providers
+from investmcp.portfolio_store import NavStore, snapshot_summary
 
 START, END = "2026-10-10", "2026-10-11"
 DEFAULT_CALENDAR = object()
@@ -191,9 +191,9 @@ def capture(
 ):
     stamp = day + "T09:10:00Z"
     clock = [stamp]
-    monkeypatch.setattr("finance_mcp.portfolio_sources._now", lambda: clock[0])
+    monkeypatch.setattr("investmcp.portfolio_sources._now", lambda: clock[0])
     monkeypatch.setattr(
-        "finance_mcp.portfolio_sources._fx_read_time", lambda: clock[0], raising=False
+        "investmcp.portfolio_sources._fx_read_time", lambda: clock[0], raising=False
     )
     clients = {}
 
@@ -400,7 +400,7 @@ def capture(
 
     clients.update({label: Toss(label) for label in ("primary", "secondary")})
     if calendar_envelope:
-        from finance_mcp.toss_api import TossClient
+        from investmcp.toss_api import TossClient
 
         def calendar_get(client, path):
             assert path == "/api/v1/market-calendar/US"
@@ -446,7 +446,7 @@ def capture(
         )
 
     if real_response_views:
-        from finance_mcp.toss_api import TossClient
+        from investmcp.toss_api import TossClient
 
         def read_response(client, path, params=None, account=False):
             if path == "/api/v1/prices":

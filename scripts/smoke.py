@@ -12,17 +12,17 @@ from mcp.client.stdio import stdio_client
 
 
 async def smoke():
-    with tempfile.TemporaryDirectory(prefix="finance-mcp-smoke-") as data_dir:
+    with tempfile.TemporaryDirectory(prefix="investmcp-smoke-") as data_dir:
         env = {
             key: value
             for key, value in os.environ.items()
             if not key.startswith(
-                ("TOSS_", "KIS_", "BINANCE_", "HYPERLIQUID_", "MCP_", "FINANCE_MCP_")
+                ("TOSS_", "KIS_", "BINANCE_", "HYPERLIQUID_", "MCP_", "INVESTMCP_")
             )
         }
-        env.update(FINANCE_MCP_DEMO="1", FINANCE_MCP_DATA_DIR=data_dir)
+        env.update(INVESTMCP_DEMO="1", INVESTMCP_DATA_DIR=data_dir)
         server = StdioServerParameters(
-            command=sys.executable, args=["-m", "finance_mcp"], env=env
+            command=sys.executable, args=["-m", "investmcp"], env=env
         )
         async with stdio_client(server) as (read, write):
             async with ClientSession(

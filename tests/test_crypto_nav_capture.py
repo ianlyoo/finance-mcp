@@ -14,15 +14,15 @@ import httpx
 import pytest
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from finance_mcp.crypto_futures_accounts import (
+from investmcp.crypto_futures_accounts import (
     BinanceAccountClient,
     HyperliquidAccountClient,
 )
-from finance_mcp.crypto_nav_capture import StablecoinQuotes, prepare_crypto_snapshot
-from finance_mcp.crypto_validation import CryptoValidationError
-from finance_mcp.daily_nav import crypto_nav
-from finance_mcp.futures_risk import RiskCollector, RiskStore
-from finance_mcp.portfolio_ledger import LedgerStore
+from investmcp.crypto_nav_capture import StablecoinQuotes, prepare_crypto_snapshot
+from investmcp.crypto_validation import CryptoValidationError
+from investmcp.daily_nav import crypto_nav
+from investmcp.futures_risk import RiskCollector, RiskStore
+from investmcp.portfolio_ledger import LedgerStore
 
 NOW = datetime(2026, 10, 13, 9, 10, tzinfo=timezone.utc)
 MS = int(NOW.timestamp() * 1000)

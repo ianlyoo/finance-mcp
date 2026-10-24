@@ -4,15 +4,15 @@ from dataclasses import replace
 
 import pytest
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp.portfolio_model import (
+from investmcp import portfolio_engine as pe
+from investmcp.portfolio_model import (
     CashBalance,
     FxRates,
     Holding,
     Transaction,
     TxType,
 )
-from finance_mcp.portfolio_sources import Collection
+from investmcp.portfolio_sources import Collection
 
 START, END = "2026-02-01", "2026-02-28"
 FX = FxRates({"USD": 1464.3})
@@ -36,7 +36,7 @@ def trade(kind, gross=12135, date="2026-02-06", **kwargs):
 
 
 def wire(monkeypatch, positions, ledger):
-    from finance_mcp import server
+    from investmcp import server
 
     class Collector:
         def collect_positions(self, accounts=None):

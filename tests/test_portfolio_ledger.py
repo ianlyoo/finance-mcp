@@ -6,7 +6,7 @@ import sqlite3
 
 import pytest
 
-from finance_mcp.portfolio_ledger import LedgerStore, ingest_capture
+from investmcp.portfolio_ledger import LedgerStore, ingest_capture
 
 
 def event(**changes):
@@ -384,7 +384,7 @@ def test_missing_native_id_keeps_evidence_identity_without_claiming_dedup(tmp_pa
 
 
 def test_hyperliquid_flows_keep_private_counterparties_and_unknown_boundary(tmp_path):
-    from finance_mcp.portfolio_ledger import normalize_row
+    from investmcp.portfolio_ledger import normalize_row
 
     address = "0x" + "0" * 40
     store = LedgerStore(tmp_path / "portfolio.db")
@@ -412,9 +412,9 @@ def test_hyperliquid_flows_keep_private_counterparties_and_unknown_boundary(tmp_
 
 
 def test_statement_rows_survive_source_undo_without_mutating_statement_store(tmp_path):
-    from finance_mcp.portfolio_ledger import ingest_statements
-    from finance_mcp.portfolio_model import Transaction, TxType
-    from finance_mcp.statement_import import StatementStore
+    from investmcp.portfolio_ledger import ingest_statements
+    from investmcp.portfolio_model import Transaction, TxType
+    from investmcp.statement_import import StatementStore
 
     db = tmp_path / "portfolio.db"
     statements = StatementStore(db)
@@ -435,7 +435,7 @@ def test_statement_rows_survive_source_undo_without_mutating_statement_store(tmp
     from dataclasses import asdict
 
     with sqlite3.connect(db) as conn:
-        from finance_mcp.statement_import import _SCHEMA
+        from investmcp.statement_import import _SCHEMA
 
         conn.executescript(_SCHEMA)
         conn.execute(
@@ -472,8 +472,8 @@ def test_statement_rows_survive_source_undo_without_mutating_statement_store(tmp
 def test_readthrough_observation_uses_stable_hl_identity_across_process_mask_rotation(
     tmp_path, monkeypatch
 ):
-    from finance_mcp import crypto_futures_accounts as futures
-    from finance_mcp.portfolio_ledger import observe_futures
+    from investmcp import crypto_futures_accounts as futures
+    from investmcp.portfolio_ledger import observe_futures
 
     address = "0x" + "0" * 40
     client = type("Client", (), {"_addresses": [address]})()
@@ -508,9 +508,9 @@ def test_readthrough_observation_uses_stable_hl_identity_across_process_mask_rot
 
 
 def test_direct_toss_history_and_fanout_share_native_identity(tmp_path):
-    from finance_mcp.portfolio_ledger import observe_broker_history, observe_collection
-    from finance_mcp.portfolio_model import toss_transactions
-    from finance_mcp.portfolio_sources import Collection, PortfolioCollector
+    from investmcp.portfolio_ledger import observe_broker_history, observe_collection
+    from investmcp.portfolio_model import toss_transactions
+    from investmcp.portfolio_sources import Collection, PortfolioCollector
 
     rows = [
         {
@@ -591,8 +591,8 @@ def test_verified_alias_binding_dedups_prior_provisional_events_and_empty_covera
 def test_internal_timing_preserves_legacy_statement_shape_hashes_and_equality():
     from dataclasses import replace
 
-    from finance_mcp.portfolio_model import Transaction, TxType
-    from finance_mcp.statement_import import _payload
+    from investmcp.portfolio_model import Transaction, TxType
+    from investmcp.statement_import import _payload
 
     original = Transaction(
         "toss",

@@ -10,7 +10,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from finance_mcp.portfolio_store import NavStore, default_db_path
+from investmcp.portfolio_store import NavStore, default_db_path
 
 
 def summary(total: float, **overrides) -> dict:
@@ -106,7 +106,7 @@ def test_db_is_created_lazily_with_parent_directories(tmp_path):
 
 
 def test_default_db_path_honors_env_override(monkeypatch, tmp_path):
-    monkeypatch.setenv("FINANCE_MCP_DATA_DIR", str(tmp_path / "custom"))
+    monkeypatch.setenv("INVESTMCP_DATA_DIR", str(tmp_path / "custom"))
     assert default_db_path() == tmp_path / "custom" / "portfolio.db"
 
 

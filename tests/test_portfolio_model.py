@@ -16,8 +16,8 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from finance_mcp import portfolio_model as model
-from finance_mcp.portfolio_model import TxType
+from investmcp import portfolio_model as model
+from investmcp.portfolio_model import TxType
 
 TOSS_HOLDINGS = {
     "result": {

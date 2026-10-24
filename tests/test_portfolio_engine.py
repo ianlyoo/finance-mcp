@@ -10,8 +10,8 @@ import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp.portfolio_model import (
+from investmcp import portfolio_engine as pe
+from investmcp.portfolio_model import (
     CashBalance,
     FxRates,
     Holding,

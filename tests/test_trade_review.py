@@ -5,10 +5,10 @@ from dataclasses import replace
 
 import pytest
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp import server
-from finance_mcp.portfolio_model import FxRates, Holding, Transaction, TxType
-from finance_mcp.portfolio_sources import Collection
+from investmcp import portfolio_engine as pe
+from investmcp import server
+from investmcp.portfolio_model import FxRates, Holding, Transaction, TxType
+from investmcp.portfolio_sources import Collection
 
 START, END = "2026-02-01", "2026-02-28"
 FX = FxRates({"USD": 1464.3, "JPY": 9})

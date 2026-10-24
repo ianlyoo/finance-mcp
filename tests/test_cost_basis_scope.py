@@ -7,17 +7,17 @@ from random import Random
 
 import pytest
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp.portfolio_export import collect_dataset
-from finance_mcp.portfolio_model import (
+from investmcp import portfolio_engine as pe
+from investmcp.portfolio_export import collect_dataset
+from investmcp.portfolio_model import (
     CashBalance,
     FxRates,
     Holding,
     Transaction,
     TxType,
 )
-from finance_mcp.portfolio_sources import Collection
-from finance_mcp.portfolio_store import NavStore
+from investmcp.portfolio_sources import Collection
+from investmcp.portfolio_store import NavStore
 
 START, END = "2026-02-01", "2026-02-28"
 FX = FxRates({"USD": 1300})
@@ -233,8 +233,8 @@ class Collector:
 def test_holdings_summary_performance_and_exports_use_account_basis(
     monkeypatch, tmp_path
 ):
-    from finance_mcp import server
-    from finance_mcp.portfolio_export import DatasetStore
+    from investmcp import server
+    from investmcp.portfolio_export import DatasetStore
 
     collector = Collector()
     monkeypatch.setattr(server, "_get_collector", lambda: collector)
@@ -288,7 +288,7 @@ def test_holdings_summary_performance_and_exports_use_account_basis(
 
 
 def test_snapshot_tool_and_job_sum_broker_account_cost(monkeypatch, tmp_path):
-    from finance_mcp import server
+    from investmcp import server
 
     collector, store = Collector(), NavStore(tmp_path / "nav.db")
     positions = collector.collect_positions()

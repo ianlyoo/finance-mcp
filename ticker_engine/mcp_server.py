@@ -21,7 +21,7 @@ INSTRUCTIONS = (
     "Issuer research and explainable scenario calculations, plus read-only price-performance comparison, "
     "technical indicators and EPS scenarios on free data (Yahoo Finance via yfinance, unofficial; SEC EDGAR). "
     "Before web search or raw candles, use get_eps_scenarios for EPS questions, compare_price_performance for "
-    "holdings vs KOSPI/S&P and get_technical_indicators for holdings' RSI/MACD; holdings come from finance-mcp. "
+    "holdings vs KOSPI/S&P and get_technical_indicators for holdings' RSI/MACD; holdings come from investmcp. "
     "Price basis (every price tool): by default the latest trade is included, from the 1-minute chart with "
     "pre-market and after-hours (지금/오늘/장중/현재가/프리마켓/애프터마켓 questions need no extra call): a "
     "provisional last point or indicator value dated today, labelled provisional with its session (pre/regular) "
@@ -46,7 +46,7 @@ LATEST = (
 COMPARE_DESCRIPTION = (
     "Compare the daily price performance of 1-8 US or Korean stocks, ETFs or indices on one common trading calendar "
     "(상대강도, 기준일 100, 수익률 비교, 코스피와 비교). "
-    "For 내 보유 종목을 코스피/S&P와 비교: get holdings from finance-mcp get_holdings, then call this once "
+    "For 내 보유 종목을 코스피/S&P와 비교: get holdings from investmcp get_holdings, then call this once "
     "with their symbols (KR 6-digit codes and US tickers together) and benchmark KOSPI (or SPY/^GSPC). Prefer it "
     "for cross-market price history and index levels: it uses the KOSPI "
     "index itself (not an ETF proxy such as KODEX 200), aligns calendars, converts USD and KRW holdings into one "
@@ -73,7 +73,7 @@ COMPARE_DESCRIPTION = (
 )
 TECHNICAL_DESCRIPTION = (
     "Daily technical indicators for one US or Korean stock, ETF or index (RSI/MACD/볼린저 밴드, 이동평균). "
-    "For RSI/MACD/볼린저 of holdings, get symbols from finance-mcp get_holdings, then call this per "
+    "For RSI/MACD/볼린저 of holdings, get symbols from investmcp get_holdings, then call this per "
     "symbol instead of computing indicators from raw candles. "
     "indicators: up to 6 of {name, params}: rsi {n:14}, macd {fast:12, slow:26, signal:9}, bb {n:20, k:2}, "
     "sma/ema/rma {n}, atr {n:14}, stdev, highest, lowest, roc {n}, volume; default rsi, macd and bb. "

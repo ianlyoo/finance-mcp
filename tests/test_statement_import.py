@@ -16,11 +16,11 @@ from pypdf.generic import (
     NumberObject,
 )
 
-from finance_mcp.portfolio_model import FxRates, Transaction, TxType
+from investmcp.portfolio_model import FxRates, Transaction, TxType
 
 
 def module():
-    return import_module("finance_mcp.statement_import")
+    return import_module("investmcp.statement_import")
 
 
 def synthetic_pdf(pages):
@@ -147,8 +147,8 @@ def test_dedup_uses_reported_dates_only_without_guessed_settlement_offsets():
 
 
 def test_imported_buy_repairs_only_covered_sell_basis_and_quantity_break(tmp_path):
-    from finance_mcp import portfolio_engine as engine
-    from finance_mcp.portfolio_sources import Collection
+    from investmcp import portfolio_engine as engine
+    from investmcp.portfolio_sources import Collection
 
     m = module()
     sell = replace(
@@ -211,7 +211,7 @@ def test_collector_hook_adds_statement_source_and_preserves_api_failure(tmp_path
     )
     assert result.fetch_complete
 
-    from finance_mcp.portfolio_sources import Collection
+    from investmcp.portfolio_sources import Collection
 
     failed = Collection(
         health={"toss:primary:orders": {"status": "error"}},
@@ -537,8 +537,8 @@ def test_nontrades_are_counted_only_and_ambiguous_trade_blocks_apply(tmp_path):
 
 def test_preview_plan_confirm_ttl_and_store_provenance(tmp_path, monkeypatch):
     m = module()
-    from finance_mcp.portfolio_sources import Collection
-    from finance_mcp.toss_accounts import TossAccountRegistry, TossCredentials
+    from investmcp.portfolio_sources import Collection
+    from investmcp.toss_accounts import TossAccountRegistry, TossCredentials
 
     inbox = tmp_path / "inbox"
     inbox.mkdir(mode=0o700)
@@ -588,8 +588,8 @@ def test_preview_plan_confirm_ttl_and_store_provenance(tmp_path, monkeypatch):
 def test_summary_loads_imported_lots_before_reporting_year(tmp_path, monkeypatch):
     from types import SimpleNamespace
 
-    from finance_mcp import server
-    from finance_mcp.portfolio_sources import Collection
+    from investmcp import server
+    from investmcp.portfolio_sources import Collection
 
     m = module()
     store = m.StatementStore(tmp_path / "ledger.db")
@@ -835,7 +835,7 @@ def test_foreign_confirmed_columns_and_full_nontrade_vocabulary(tmp_path):
 
 
 def test_unavailable_api_dedup_blocks_apply_and_marks_preview_partial(tmp_path):
-    from finance_mcp.portfolio_sources import Collection
+    from investmcp.portfolio_sources import Collection
 
     m = module()
     inbox = tmp_path / "inbox"

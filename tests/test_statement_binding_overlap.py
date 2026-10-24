@@ -4,10 +4,10 @@ from dataclasses import replace
 
 import pytest
 
-from finance_mcp import statement_import as m
-from finance_mcp.portfolio_model import Transaction, TxType
-from finance_mcp.portfolio_sources import Collection
-from finance_mcp.toss_accounts import TossAccountRegistry, TossCredentials
+from investmcp import statement_import as m
+from investmcp.portfolio_model import Transaction, TxType
+from investmcp.portfolio_sources import Collection
+from investmcp.toss_accounts import TossAccountRegistry, TossCredentials
 
 
 def trades(count=5):

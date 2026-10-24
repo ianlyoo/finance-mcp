@@ -11,13 +11,13 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-_RUNTIME = tempfile.TemporaryDirectory(prefix="finance-mcp-tests-")
+_RUNTIME = tempfile.TemporaryDirectory(prefix="investmcp-tests-")
 for name in tuple(os.environ):
     if name.startswith(
-        ("TOSS_", "KIS_", "BINANCE_", "MCP_", "FINANCE_MCP_", "HYPERLIQUID_")
+        ("TOSS_", "KIS_", "BINANCE_", "MCP_", "INVESTMCP_", "HYPERLIQUID_")
     ):
         os.environ.pop(name, None)
-os.environ["FINANCE_MCP_DATA_DIR"] = _RUNTIME.name
+os.environ["INVESTMCP_DATA_DIR"] = _RUNTIME.name
 os.environ["XDG_CACHE_HOME"] = _RUNTIME.name
 
 
@@ -35,8 +35,8 @@ def no_live_network(monkeypatch):
 
 @pytest.fixture(autouse=True)
 def isolated_state(tmp_path, monkeypatch):
-    monkeypatch.setenv("FINANCE_MCP_DATA_DIR", str(tmp_path))
-    from finance_mcp import provider_pacing, toss_api
+    monkeypatch.setenv("INVESTMCP_DATA_DIR", str(tmp_path))
+    from investmcp import provider_pacing, toss_api
 
     for name in ("SEC_BUDGET", "BINANCE_BUDGET"):
         current = getattr(provider_pacing, name)

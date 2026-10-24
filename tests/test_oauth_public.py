@@ -9,8 +9,8 @@ from mcp.server.auth.provider import AuthorizationParams, TokenError
 from mcp.shared.auth import OAuthClientInformationFull
 from pydantic import AnyUrl
 
-from finance_mcp import consent_gate
-from finance_mcp.oauth_provider import PersonalOAuthProvider
+from investmcp import consent_gate
+from investmcp.oauth_provider import PersonalOAuthProvider
 
 
 async def test_consent_pkce_durable_tokens_rotation_and_revocation(

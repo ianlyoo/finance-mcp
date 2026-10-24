@@ -7,7 +7,7 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from finance_mcp.binance_futures_api import BinanceFuturesClient
+from investmcp.binance_futures_api import BinanceFuturesClient
 
 
 class FakeBinanceFuturesClient(BinanceFuturesClient):

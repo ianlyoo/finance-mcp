@@ -136,7 +136,7 @@ def test_fix1_conflicting_timestamp_inside_window_blocks(wired):
 
 
 def test_fix1_ten_thousand_old_flows_have_constant_statement_count(wired, monkeypatch):
-    from finance_mcp.ledger_returns import read_flows
+    from investmcp.ledger_returns import read_flows
 
     coverage(wired)
     roster(wired)
@@ -233,7 +233,7 @@ def test_fix1_crypto_risk_identity_requires_durable_mapping(wired):
 
 
 def test_fix1_read_budget_exhaustion_is_null(wired):
-    from finance_mcp.ledger_returns import read_flows
+    from investmcp.ledger_returns import read_flows
 
     coverage(wired)
     evidence = read_flows(
@@ -317,7 +317,7 @@ def test_fix1_effective_timestamp_enrichment_brings_event_into_window(wired):
 
 
 def test_fix1_additive_indexes_upgrade_existing_immutable_schema(wired):
-    from finance_mcp.portfolio_ledger import LedgerStore
+    from investmcp.portfolio_ledger import LedgerStore
 
     with wired.ledger.read() as conn:
         names = [
@@ -342,7 +342,7 @@ def test_fix1_additive_indexes_upgrade_existing_immutable_schema(wired):
 
 
 def test_fix1_window_ending_before_first_coverage_keeps_reason(wired):
-    from finance_mcp.ledger_returns import read_flows
+    from investmcp.ledger_returns import read_flows
 
     coverage(wired, lo="2025-11-01")
     evidence = read_flows(

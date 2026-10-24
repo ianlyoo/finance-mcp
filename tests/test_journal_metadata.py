@@ -4,9 +4,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from finance_mcp.journal_metadata import annotate_rows, identity, legacy_kis_account_key
-from finance_mcp.portfolio_model import kis_overseas_transactions, toss_transactions
-from finance_mcp.toss_api import HistoryRows, TossClient
+from investmcp.journal_metadata import annotate_rows, identity, legacy_kis_account_key
+from investmcp.portfolio_model import kis_overseas_transactions, toss_transactions
+from investmcp.toss_api import HistoryRows, TossClient
 
 
 def test_identity_namespaces_stable_across_updates_and_tool_shapes():
@@ -111,9 +111,9 @@ def test_toss_cap_inconsistent_cursor_and_complete_empty():
 
 
 def test_toss_tool_complete_empty_vs_unavailable_and_cap(monkeypatch):
-    from finance_mcp import server
-    from finance_mcp.health_status import HealthStatus
-    from finance_mcp.toss_api import TossAPIError
+    from investmcp import server
+    from investmcp.health_status import HealthStatus
+    from investmcp.toss_api import TossAPIError
 
     rows = HistoryRows()
     client = SimpleNamespace(
@@ -145,8 +145,8 @@ def test_toss_tool_complete_empty_vs_unavailable_and_cap(monkeypatch):
 
 
 def test_kis_tool_partial_retains_domestic_and_marks_overseas_failure(monkeypatch):
-    from finance_mcp import server
-    from finance_mcp.kis_api import KISAPIError
+    from investmcp import server
+    from investmcp.kis_api import KISAPIError
 
     def fail(*args):
         raise KISAPIError(503, {})
@@ -175,7 +175,7 @@ def test_kis_tool_partial_retains_domestic_and_marks_overseas_failure(monkeypatc
 def test_explicit_account_alias_survives_label_change(tmp_path):
     import json
 
-    from finance_mcp.toss_accounts import TossAccountRegistry
+    from investmcp.toss_accounts import TossAccountRegistry
 
     def registry(label):
         payload = {
@@ -199,8 +199,8 @@ def test_explicit_account_alias_survives_label_change(tmp_path):
 
 
 def test_kis_all_account_init_failure_preserves_other_account(monkeypatch):
-    from finance_mcp import server
-    from finance_mcp.kinvest_common import NotConfiguredError
+    from investmcp import server
+    from investmcp.kinvest_common import NotConfiguredError
 
     good = SimpleNamespace(
         supports_overseas=False,

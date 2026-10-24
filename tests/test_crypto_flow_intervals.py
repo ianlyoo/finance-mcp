@@ -7,14 +7,14 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from finance_mcp.crypto_flow_evidence import FlowEvidence, normalize
-from finance_mcp.crypto_flow_intervals import (
+from investmcp.crypto_flow_evidence import FlowEvidence, normalize
+from investmcp.crypto_flow_intervals import (
     EVIDENCE_PAD,
     REQUIRED_STREAMS,
     crypto_interval_flows,
 )
-from finance_mcp.portfolio_ledger import LedgerStore, normalize_rows
-from finance_mcp.portfolio_store import NavStore
+from investmcp.portfolio_ledger import LedgerStore, normalize_rows
+from investmcp.portfolio_store import NavStore
 
 T0 = datetime(2026, 10, 13, 9, 10, tzinfo=timezone.utc)
 T1 = T0 + timedelta(days=1)

@@ -1,10 +1,10 @@
-# finance-mcp
+# InvestMCP
 
 [한국어](README.md) · English
 
-I built finance-mcp to bring my earlier [K-invest (InvestMCP)](https://github.com/ianlyoo/K-invest) and [Ticker Research](https://github.com/ianlyoo/ticker-research-mcp) projects into one read-only MCP server. It lets an AI chat client such as Claude or ChatGPT read your own brokerage and crypto futures accounts alongside public market data and ticker research for Korean and US securities and crypto futures.
+I built investmcp to bring my earlier [K-invest](https://github.com/ianlyoo/K-invest) and [Ticker Research](https://github.com/ianlyoo/ticker-research-mcp) projects into one read-only MCP server. It lets an AI chat client such as Claude or ChatGPT read your own brokerage and crypto futures accounts alongside public market data and ticker research for Korean and US securities and crypto futures.
 
-The account and accounting engines come from InvestMCP 2.15.4. Research calculations come from the newer public Ticker Research fork, with SEC EDGAR and yfinance inputs. Finance and research keep their own SEC implementations to preserve their distinct fiscal-period, continuity and provenance safeguards. There is one process, one tool catalog, and one authentication boundary.
+The account and accounting engines come from my earlier InvestMCP 2.15.4. Research calculations come from the newer public Ticker Research fork, with SEC EDGAR and yfinance inputs. Finance and research keep their own SEC implementations to preserve their distinct fiscal-period, continuity and provenance safeguards. There is one process, one tool catalog, and one authentication boundary.
 
 **Each user runs this server with their own keys for their own accounts. It is not a shared or hosted data service.** See [Configure your own accounts](#configure-your-own-accounts) for the provider terms.
 
@@ -24,7 +24,7 @@ Python 3.11 or newer is required. From a source checkout or unpacked source arch
 
 ```bash
 python -m pip install .
-FINANCE_MCP_DEMO=1 python scripts/smoke.py
+INVESTMCP_DEMO=1 python scripts/smoke.py
 ```
 
 The smoke script starts the installed package over stdio, initializes an MCP client, lists tools, fetches a real ECB USD/KRW reference rate, and reads synthetic holdings and portfolio returns. It prints four PASS lines and exits nonzero on any failure. It creates and removes its own temporary data directory. No broker keys are needed.
@@ -41,20 +41,20 @@ For an isolated installation, first create a virtual environment with `python -m
 ```bash
 uv venv
 uv pip install --python .venv/bin/python .
-FINANCE_MCP_DEMO=1 .venv/bin/python scripts/smoke.py
+INVESTMCP_DEMO=1 .venv/bin/python scripts/smoke.py
 ```
 
 Run the server for an MCP client:
 
 ```bash
-FINANCE_MCP_DEMO=1 finance-mcp
+INVESTMCP_DEMO=1 investmcp
 # Equivalent:
-FINANCE_MCP_DEMO=1 python -m finance_mcp --transport stdio
+INVESTMCP_DEMO=1 python -m investmcp --transport stdio
 ```
 
 Stdio waits for JSON-RPC messages; it is not an interactive shell. Logs go to stderr.
 
-`FINANCE_MCP_DEMO=1` replaces account and portfolio responses with an invented portfolio: `DEMO-TOSS-1`, `DEMO-KIS-1`, synthetic KR/US securities, transactions and FX, and an empty synthetic Binance futures account. The same portfolio engine computes holdings, realized P&L, performance and concentration risk. Generated trades and 31 dated NAV observations cover a 30-day demonstration window, so `get_portfolio_returns` returns a non-empty result without prior collection. Account calls do not access brokers or the network in demo mode. Public-data and research calls still fetch public data. Demo NAV snapshots use a separate `demo` subdirectory. Statement imports require a configured real account; demo export returns a synthetic dataset without persisting it.
+`INVESTMCP_DEMO=1` replaces account and portfolio responses with an invented portfolio: `DEMO-TOSS-1`, `DEMO-KIS-1`, synthetic KR/US securities, transactions and FX, and an empty synthetic Binance futures account. The same portfolio engine computes holdings, realized P&L, performance and concentration risk. Generated trades and 31 dated NAV observations cover a 30-day demonstration window, so `get_portfolio_returns` returns a non-empty result without prior collection. Account calls do not access brokers or the network in demo mode. Public-data and research calls still fetch public data. Demo NAV snapshots use a separate `demo` subdirectory. Statement imports require a configured real account; demo export returns a synthetic dataset without persisting it.
 
 With demo mode off and no broker configured, account tools return `NOT_CONFIGURED` with the required variable names.
 
@@ -84,9 +84,9 @@ Use an absolute path to the installed executable so desktop clients can find the
 {
   "mcpServers": {
     "finance": {
-      "command": "/absolute/path/to/.venv/bin/finance-mcp",
+      "command": "/absolute/path/to/.venv/bin/investmcp",
       "args": ["--transport", "stdio"],
-      "env": {"FINANCE_MCP_DEMO": "1"}
+      "env": {"INVESTMCP_DEMO": "1"}
     }
   }
 }
@@ -99,7 +99,7 @@ For Claude Code, the same `mcpServers` object can be used in a project `.mcp.jso
 HTTP is opt-in and refuses to start without `MCP_AUTH_TOKEN`. Its default bind address is loopback and its default port is 18800. Set a strong random token through the environment, then run:
 
 ```bash
-finance-mcp --transport streamable-http --host 127.0.0.1 --port 18800
+investmcp --transport streamable-http --host 127.0.0.1 --port 18800
 ```
 
 The endpoint is `/mcp`. A client supporting direct bearer authentication sends `Authorization: Bearer` with the configured token. This token is for the MCP server, separate from broker credentials.
@@ -109,7 +109,7 @@ For remote connectors, terminate HTTPS at a reverse proxy and forward the entire
 Enable OAuth by setting `MCP_OAUTH_ENABLED=1` and `MCP_OAUTH_APPROVAL_HASH`. Generate the hash locally with:
 
 ```bash
-python -m finance_mcp.consent_gate hash
+python -m investmcp.consent_gate hash
 ```
 
 The command reads the approval passphrase without echoing it and prints its scrypt hash. Store that hash in `MCP_OAUTH_APPROVAL_HASH`, separate from `MCP_AUTH_TOKEN`. Restart the server after configuration changes. The consent page requires your approval passphrase before issuing a code. Never enter broker credentials in that page.
@@ -131,9 +131,9 @@ The server reads process environment variables only. It does not automatically l
 - **Korea Investment & Securities.** Obtain credentials through the [official API portal](https://apiportal.koreainvestment.com/), then set `KIS_APP_KEY`, `KIS_APP_SECRET`, `KIS_CANO`, and optionally `KIS_ACNT_PRDT_CD`. `KIS_ACCOUNTS_JSON` provides multiple account objects with `label`, `app_key`, `app_secret`, `cano`, and `acnt_prdt_cd`.
 - **Binance.** For futures account data, use your own read-only key with `BINANCE_API_KEY` and `BINANCE_API_SECRET`. An RSA key can instead be supplied as PEM text in `BINANCE_SIGNING_KEY`. Disable trading and withdrawal permissions on the key. Binance public market tools need no key.
 - **Hyperliquid.** Optional reads use account addresses supplied by you, via the official information API; no signing key is accepted.
-- **SEC.** SEC tools use a generic default User-Agent, `finance-mcp/0.1.0 (contact: you@example.com)`, so installation and public tools need no secret. Override `SEC_USER_AGENT` with your application identifier and genuine contact before sustained SEC use. SEC may refuse requests without an acceptable contact or from restricted networks.
+- **SEC.** SEC tools use a generic default User-Agent, `investmcp/0.1.0 (contact: you@example.com)`, so installation and public tools need no secret. Override `SEC_USER_AGENT` with your application identifier and genuine contact before sustained SEC use. SEC may refuse requests without an acceptable contact or from restricted networks.
 
-All ledger, NAV, OAuth, token and local cache state belongs under `FINANCE_MCP_DATA_DIR`, default `~/.finance-mcp`. Keep this directory private and back it up if you need historical returns. Statement PDFs must be placed in its `statements/inbox` directory; tools accept bare filenames and reject path traversal and symlinks. No statements, account databases or personal fixtures ship with this repository.
+All ledger, NAV, OAuth, token and local cache state belongs under `INVESTMCP_DATA_DIR`, default `~/.investmcp`. Keep this directory private and back it up if you need historical returns. Statement PDFs must be placed in its `statements/inbox` directory; tools accept bare filenames and reject path traversal and symlinks. No statements, account databases or personal fixtures ship with this repository.
 
 ## Environment variables
 
@@ -141,12 +141,12 @@ Names and purposes only; values are intentionally omitted.
 
 | Name | Purpose |
 | --- | --- |
-| `FINANCE_MCP_DEMO` | Serve account and portfolio tools from the synthetic demo portfolio |
-| `FINANCE_MCP_DATA_DIR` | Directory for ledger, NAV, OAuth, token and cache state |
-| `FINANCE_MCP_TRANSPORT` | Default transport (`stdio` or `streamable-http`) |
-| `FINANCE_MCP_HOST` | HTTP bind address |
-| `FINANCE_MCP_PORT` | HTTP port |
-| `FINANCE_MCP_LEDGER_FULL_BACKFILL` | Re-read every history window from the broker on each request |
+| `INVESTMCP_DEMO` | Serve account and portfolio tools from the synthetic demo portfolio |
+| `INVESTMCP_DATA_DIR` | Directory for ledger, NAV, OAuth, token and cache state |
+| `INVESTMCP_TRANSPORT` | Default transport (`stdio` or `streamable-http`) |
+| `INVESTMCP_HOST` | HTTP bind address |
+| `INVESTMCP_PORT` | HTTP port |
+| `INVESTMCP_LEDGER_FULL_BACKFILL` | Re-read every history window from the broker on each request |
 | `TOSS_CLIENT_ID` | Toss Securities Open API client ID |
 | `TOSS_CLIENT_SECRET` | Toss Securities Open API client secret |
 | `TOSS_ACCOUNTS_JSON` | Multiple Toss accounts as JSON |
@@ -198,26 +198,26 @@ Public services can rate-limit, delay or restrict data by region. Yahoo is not a
 
 ```mermaid
 flowchart LR
-  A["MCP client<br/>Claude · ChatGPT"] -->|"stdio / HTTP + OAuth"| B["finance-mcp<br/>28 tools"]
+  A["MCP client<br/>Claude · ChatGPT"] -->|"stdio / HTTP + OAuth"| B["investmcp<br/>28 tools"]
   B --> C["Accounts and portfolio · 10"]
   B --> D["Public data and status · 11"]
   B --> E["Research · 7<br/>ticker_engine"]
   C --> F["Toss · KIS · Binance · Hyperliquid · Upbit"]
-  C --> G[("Local ledger and NAV<br/>FINANCE_MCP_DATA_DIR")]
+  C --> G[("Local ledger and NAV<br/>INVESTMCP_DATA_DIR")]
   D --> H["SEC EDGAR · ECB · Binance public · yfinance<br/>Toss / KIS when configured"]
   E --> I["SEC EDGAR · yfinance"]
 ```
 
 | Path | Contents |
 | --- | --- |
-| `finance_mcp/` | Server, transports, OAuth, account/portfolio engine, finance SEC and public-data helpers, demo portfolio |
+| `investmcp/` | Server, transports, OAuth, account/portfolio engine, finance SEC and public-data helpers, demo portfolio |
 | `ticker_engine/` | Research providers and calculations, mounted into the same server |
 | `scripts/smoke.py` | Online stdio smoke check |
 | `tests/` | Synthetic-data unit tests |
 | `TOOLS.md` | Every tool and argument |
 | `.env.example` | Environment variable names with empty values |
 
-Only `finance_mcp` and `ticker_engine` are installed as importable project packages. Research uses the unified transport's authentication and does not need a separate service-token file.
+Only `investmcp` and `ticker_engine` are installed as importable project packages. Research uses the unified transport's authentication and does not need a separate service-token file.
 
 ## Development
 

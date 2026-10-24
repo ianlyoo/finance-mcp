@@ -1,12 +1,12 @@
-# finance-mcp
+# InvestMCP
 
-**English abstract.** finance-mcp is a read-only MCP server that lets an individual investor ask an AI chat client such as Claude or ChatGPT about their own brokerage and crypto futures accounts together with public market data and ticker research. It merges my earlier K-invest (InvestMCP) and Ticker Research projects into one process with 28 tools: 10 account/portfolio, 11 public-data/status and 7 research. Account data comes only from official APIs (Toss Securities, Korea Investment & Securities, Binance, Hyperliquid), filings from SEC EDGAR, and unofficial Yahoo data via yfinance is labelled as such; there are no order or transfer tools. Each user runs it locally with their own keys for their own accounts; it is not a shared or hosted data service. Full English documentation: [README.en.md](README.en.md).
+**English abstract.** InvestMCP is a read-only MCP server that lets an individual investor ask an AI chat client such as Claude or ChatGPT about their own brokerage and crypto futures accounts together with public market data and ticker research. It merges my earlier K-invest and Ticker Research projects into one process with 28 tools: 10 account/portfolio, 11 public-data/status and 7 research. Account data comes only from official APIs (Toss Securities, Korea Investment & Securities, Binance, Hyperliquid), filings from SEC EDGAR, and unofficial Yahoo data via yfinance is labelled as such; there are no order or transfer tools. Each user runs it locally with their own keys for their own accounts; it is not a shared or hosted data service. Full English documentation: [README.en.md](README.en.md).
 
 ## 무엇인가
 
 개인 투자자가 Claude·ChatGPT 같은 AI 채팅에서 자기 증권·크립토 계좌와 공개 시장 데이터를 한곳에서 묻는 **읽기 전용** MCP 서버다. 국내·미국 주식과 크립토 선물을 다룬다. "내 보유 종목이 코스피 대비 어떤가"라는 질문에는 `get_holdings`로 종목을 읽고 `compare_price_performance`로 비교한다. "이 종목의 TTM 실적과 최근 내부자 거래는"이라는 질문에는 SEC 공시 도구를 쓴다.
 
-이전에 만든 두 프로젝트 [K-invest (InvestMCP)](https://github.com/ianlyoo/K-invest)와 [Ticker Research](https://github.com/ianlyoo/ticker-research-mcp)를 하나로 합쳤다. 계좌·회계 엔진은 InvestMCP 2.15.4에서, 리서치 계산은 Ticker Research의 최신 공개 포크에서 가져왔다. 프로세스 하나, 도구 카탈로그 하나, 인증 경계 하나다. SEC 구현은 합치지 않았다. 재무 도구와 리서치 도구는 회계 기간·연속성·출처 검증 장치가 서로 달라서 각자 자기 구현을 쓴다.
+이전에 만든 두 프로젝트 [K-invest](https://github.com/ianlyoo/K-invest)와 [Ticker Research](https://github.com/ianlyoo/ticker-research-mcp)를 하나로 합쳤다. 계좌·회계 엔진은 기존 InvestMCP 2.15.4에서, 리서치 계산은 Ticker Research의 최신 공개 포크에서 가져왔다. 프로세스 하나, 도구 카탈로그 하나, 인증 경계 하나다. SEC 구현은 합치지 않았다. 재무 도구와 리서치 도구는 회계 기간·연속성·출처 검증 장치가 서로 달라서 각자 자기 구현을 쓴다.
 
 **각 사용자가 자기 키로 자기 계좌만 조회하도록 직접 실행한다. 공유하거나 남에게 시세를 제공하는 호스팅 데이터 서비스가 아니다.** 근거가 되는 약관은 [내 계좌 설정](#내-계좌-설정)에 있다.
 
@@ -61,7 +61,7 @@ Python 3.11 이상이 필요하다. 소스 체크아웃이나 압축을 푼 소�
 
 ```bash
 python -m pip install .
-FINANCE_MCP_DEMO=1 python scripts/smoke.py
+INVESTMCP_DEMO=1 python scripts/smoke.py
 ```
 
 `scripts/smoke.py`는 설치된 패키지를 stdio로 띄워 MCP 클라이언트로 초기화하고, 도구 목록이 28개인지 확인하고, ECB의 실제 USD/KRW 기준환율을 받고, 합성 계좌의 보유 종목과 포트폴리오 수익률을 읽는다. 임시 데이터 디렉터리를 만들었다가 지우며 브로커 키는 필요 없다. 환율 단계에는 인터넷 연결이 필요하다. 성공하면 PASS 네 줄을 출력하고, 하나라도 실패하면 0이 아닌 코드로 끝난다.
@@ -78,20 +78,20 @@ PASS demo: synthetic holdings and portfolio returns
 ```bash
 uv venv
 uv pip install --python .venv/bin/python .
-FINANCE_MCP_DEMO=1 .venv/bin/python scripts/smoke.py
+INVESTMCP_DEMO=1 .venv/bin/python scripts/smoke.py
 ```
 
 MCP 클라이언트용으로 서버를 띄운다.
 
 ```bash
-FINANCE_MCP_DEMO=1 finance-mcp
+INVESTMCP_DEMO=1 investmcp
 # 같은 동작:
-FINANCE_MCP_DEMO=1 python -m finance_mcp --transport stdio
+INVESTMCP_DEMO=1 python -m investmcp --transport stdio
 ```
 
 stdio는 JSON-RPC 메시지를 기다린다. 대화형 셸이 아니다. 로그는 stderr로 나간다.
 
-**데모 모드.** `FINANCE_MCP_DEMO=1`이면 계좌·포트폴리오 응답이 가상 포트폴리오로 바뀐다. `DEMO-TOSS-1`, `DEMO-KIS-1` 계좌, 합성 국내·미국 종목과 거래, 환율, 빈 합성 Binance 선물 계좌다. 실제 계좌와 같은 포트폴리오 엔진이 보유 종목, 실현 손익, 성과, 집중도 위험을 계산한다. 생성된 거래와 31개 일별 NAV 관측이 30일 구간을 채우므로, 미리 수집하지 않아도 `get_portfolio_returns`가 비어 있지 않은 결과를 돌려준다. 데모 모드의 계좌 호출은 브로커나 네트워크에 접근하지 않는다. 공개 데이터·리서치 도구는 그대로 공개 데이터를 받아온다. 데모 NAV 스냅샷은 별도 `demo` 하위 디렉터리에 저장한다. 명세서 가져오기는 실제 계좌 설정이 있어야 하고, 데모 내보내기는 합성 데이터셋을 저장하지 않고 돌려준다.
+**데모 모드.** `INVESTMCP_DEMO=1`이면 계좌·포트폴리오 응답이 가상 포트폴리오로 바뀐다. `DEMO-TOSS-1`, `DEMO-KIS-1` 계좌, 합성 국내·미국 종목과 거래, 환율, 빈 합성 Binance 선물 계좌다. 실제 계좌와 같은 포트폴리오 엔진이 보유 종목, 실현 손익, 성과, 집중도 위험을 계산한다. 생성된 거래와 31개 일별 NAV 관측이 30일 구간을 채우므로, 미리 수집하지 않아도 `get_portfolio_returns`가 비어 있지 않은 결과를 돌려준다. 데모 모드의 계좌 호출은 브로커나 네트워크에 접근하지 않는다. 공개 데이터·리서치 도구는 그대로 공개 데이터를 받아온다. 데모 NAV 스냅샷은 별도 `demo` 하위 디렉터리에 저장한다. 명세서 가져오기는 실제 계좌 설정이 있어야 하고, 데모 내보내기는 합성 데이터셋을 저장하지 않고 돌려준다.
 
 ## 연결
 
@@ -103,9 +103,9 @@ stdio는 JSON-RPC 메시지를 기다린다. 대화형 셸이 아니다. 로그�
 {
   "mcpServers": {
     "finance": {
-      "command": "/absolute/path/to/.venv/bin/finance-mcp",
+      "command": "/absolute/path/to/.venv/bin/investmcp",
       "args": ["--transport", "stdio"],
-      "env": {"FINANCE_MCP_DEMO": "1"}
+      "env": {"INVESTMCP_DEMO": "1"}
     }
   }
 }
@@ -118,7 +118,7 @@ Claude Code에서는 같은 `mcpServers` 객체를 프로젝트 `.mcp.json`에 �
 HTTP는 선택 사항이며 `MCP_AUTH_TOKEN`이 없으면 시작하지 않는다. 기본 바인드 주소는 루프백, 기본 포트는 18800이다. 강한 무작위 토큰을 환경 변수로 넣고 실행한다.
 
 ```bash
-finance-mcp --transport streamable-http --host 127.0.0.1 --port 18800
+investmcp --transport streamable-http --host 127.0.0.1 --port 18800
 ```
 
 엔드포인트는 `/mcp`다. 직접 베어러 인증을 지원하는 클라이언트는 설정한 토큰을 `Authorization: Bearer`로 보낸다. 이 토큰은 MCP 서버용이며 브로커 키와 별개다.
@@ -128,7 +128,7 @@ finance-mcp --transport streamable-http --host 127.0.0.1 --port 18800
 OAuth는 `MCP_OAUTH_ENABLED=1`과 `MCP_OAUTH_APPROVAL_HASH`로 켠다. 해시는 로컬에서 만든다.
 
 ```bash
-python -m finance_mcp.consent_gate hash
+python -m investmcp.consent_gate hash
 ```
 
 이 명령은 승인 암호를 화면에 표시하지 않고 읽어 scrypt 해시를 출력한다. 그 해시를 `MCP_AUTH_TOKEN`과 별도로 `MCP_OAUTH_APPROVAL_HASH`에 넣고, 설정을 바꾼 뒤에는 서버를 재시작한다. 동의 페이지는 인가 코드를 발급하기 전에 승인 암호를 요구한다. 이 페이지에 브로커 키를 넣지 않는다.
@@ -150,9 +150,9 @@ OAuth는 디스커버리, 동적 클라이언트 등록, PKCE S256 인가 코드
 - **한국투자증권:** [공식 API 포털](https://apiportal.koreainvestment.com/)에서 키를 받아 `KIS_APP_KEY`, `KIS_APP_SECRET`, `KIS_CANO`, 필요하면 `KIS_ACNT_PRDT_CD`를 설정한다. 여러 계좌는 `KIS_ACCOUNTS_JSON`에 `label`, `app_key`, `app_secret`, `cano`, `acnt_prdt_cd`를 가진 계좌 객체들로 넣는다.
 - **Binance:** 선물 계좌 조회에는 본인 읽기 전용 키를 `BINANCE_API_KEY`, `BINANCE_API_SECRET`에 넣는다. RSA 키는 PEM 텍스트로 `BINANCE_SIGNING_KEY`에 넣을 수 있다. 키의 거래·출금 권한은 끈다. Binance 공개 시장 도구는 키가 필요 없다.
 - **Hyperliquid:** 선택 사항이다. 본인이 넣은 계정 주소로 공식 info API를 읽는다. 서명 키는 받지 않는다.
-- **SEC:** 기본 User-Agent가 `finance-mcp/0.1.0 (contact: you@example.com)`이라 설치와 공개 도구에 비밀값이 필요 없다. SEC를 꾸준히 쓰기 전에 `SEC_USER_AGENT`를 본인 애플리케이션 식별자와 실제 연락처로 바꾼다. 연락처가 적절하지 않거나 제한된 네트워크에서 온 요청은 SEC가 거부할 수 있다.
+- **SEC:** 기본 User-Agent가 `investmcp/0.1.0 (contact: you@example.com)`이라 설치와 공개 도구에 비밀값이 필요 없다. SEC를 꾸준히 쓰기 전에 `SEC_USER_AGENT`를 본인 애플리케이션 식별자와 실제 연락처로 바꾼다. 연락처가 적절하지 않거나 제한된 네트워크에서 온 요청은 SEC가 거부할 수 있다.
 
-원장, NAV, OAuth, 토큰, 로컬 캐시는 모두 `FINANCE_MCP_DATA_DIR`(기본 `~/.finance-mcp`) 아래에 둔다. 이 디렉터리는 비공개로 두고, 과거 수익률이 필요하면 백업한다. 명세서 PDF는 그 아래 `statements/inbox`에 둔다. 도구는 파일 이름만 받고 경로 이동과 심볼릭 링크를 거부한다. 이 저장소에는 명세서, 계좌 데이터베이스, 개인 픽스처가 없다.
+원장, NAV, OAuth, 토큰, 로컬 캐시는 모두 `INVESTMCP_DATA_DIR`(기본 `~/.investmcp`) 아래에 둔다. 이 디렉터리는 비공개로 두고, 과거 수익률이 필요하면 백업한다. 명세서 PDF는 그 아래 `statements/inbox`에 둔다. 도구는 파일 이름만 받고 경로 이동과 심볼릭 링크를 거부한다. 이 저장소에는 명세서, 계좌 데이터베이스, 개인 픽스처가 없다.
 
 ## 환경 변수
 
@@ -160,12 +160,12 @@ OAuth는 디스커버리, 동적 클라이언트 등록, PKCE S256 인가 코드
 
 | 이름 | 설명 |
 |---|---|
-| `FINANCE_MCP_DEMO` | 켜면 계좌·포트폴리오 도구가 합성 데모 포트폴리오를 쓴다 |
-| `FINANCE_MCP_DATA_DIR` | 원장, NAV, OAuth, 토큰, 캐시를 저장하는 디렉터리 |
-| `FINANCE_MCP_TRANSPORT` | 기본 전송 방식 (`stdio` 또는 `streamable-http`) |
-| `FINANCE_MCP_HOST` | HTTP 바인드 주소 |
-| `FINANCE_MCP_PORT` | HTTP 포트 |
-| `FINANCE_MCP_LEDGER_FULL_BACKFILL` | 켜면 요청마다 모든 이력 구간을 브로커에서 다시 읽는다 |
+| `INVESTMCP_DEMO` | 켜면 계좌·포트폴리오 도구가 합성 데모 포트폴리오를 쓴다 |
+| `INVESTMCP_DATA_DIR` | 원장, NAV, OAuth, 토큰, 캐시를 저장하는 디렉터리 |
+| `INVESTMCP_TRANSPORT` | 기본 전송 방식 (`stdio` 또는 `streamable-http`) |
+| `INVESTMCP_HOST` | HTTP 바인드 주소 |
+| `INVESTMCP_PORT` | HTTP 포트 |
+| `INVESTMCP_LEDGER_FULL_BACKFILL` | 켜면 요청마다 모든 이력 구간을 브로커에서 다시 읽는다 |
 | `TOSS_CLIENT_ID` | 토스증권 Open API 클라이언트 ID |
 | `TOSS_CLIENT_SECRET` | 토스증권 Open API 클라이언트 시크릿 |
 | `TOSS_ACCOUNTS_JSON` | 여러 토스증권 계좌 설정 (JSON) |
@@ -200,26 +200,26 @@ OAuth는 디스커버리, 동적 클라이언트 등록, PKCE S256 인가 코드
 
 ```mermaid
 flowchart LR
-  A["MCP 클라이언트<br/>Claude · ChatGPT"] -->|"stdio / HTTP + OAuth"| B["finance-mcp 서버<br/>도구 28개"]
+  A["MCP 클라이언트<br/>Claude · ChatGPT"] -->|"stdio / HTTP + OAuth"| B["investmcp 서버<br/>도구 28개"]
   B --> C["계좌·포트폴리오 10"]
   B --> D["시장 데이터·상태 11"]
   B --> E["종목 리서치 7<br/>ticker_engine"]
   C --> F["토스증권 · 한국투자증권 · Binance · Hyperliquid · Upbit"]
-  C --> G[("로컬 원장 · NAV<br/>FINANCE_MCP_DATA_DIR")]
+  C --> G[("로컬 원장 · NAV<br/>INVESTMCP_DATA_DIR")]
   D --> H["SEC EDGAR · ECB · Binance 공개 · yfinance<br/>설정 시 토스증권 · 한국투자증권"]
   E --> I["SEC EDGAR · yfinance"]
 ```
 
 | 경로 | 내용 |
 |---|---|
-| `finance_mcp/` | 서버, 전송, OAuth, 계좌·포트폴리오 엔진, 재무용 SEC와 공개 데이터 모듈, 데모 포트폴리오 |
+| `investmcp/` | 서버, 전송, OAuth, 계좌·포트폴리오 엔진, 재무용 SEC와 공개 데이터 모듈, 데모 포트폴리오 |
 | `ticker_engine/` | 리서치 공급자와 계산. 같은 서버에 마운트된다 |
 | `scripts/smoke.py` | stdio 온라인 스모크 검사 |
 | `tests/` | 합성 데이터 단위 테스트 |
 | `TOOLS.md` | 도구별 인자와 설명 |
 | `.env.example` | 값이 빈 환경 변수 이름 목록 |
 
-설치하면 `finance_mcp`와 `ticker_engine` 두 패키지만 import 대상으로 들어간다. 리서치 도구는 통합 서버의 전송 인증을 그대로 쓰며 별도 서비스 토큰 파일이 필요 없다.
+설치하면 `investmcp`와 `ticker_engine` 두 패키지만 import 대상으로 들어간다. 리서치 도구는 통합 서버의 전송 인증을 그대로 쓰며 별도 서비스 토큰 파일이 필요 없다.
 
 ## 테스트
 

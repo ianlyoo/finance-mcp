@@ -8,18 +8,18 @@ from types import SimpleNamespace
 
 import pytest
 
-from finance_mcp.yfinance_api import YFinanceClient
+from investmcp.yfinance_api import YFinanceClient
 
 
 @pytest.fixture(autouse=True)
 def daily_cache_isolation(monkeypatch, tmp_path):
-    from finance_mcp.yfinance_api import _DIVIDEND_CACHE, _DIVIDEND_CACHE_LOCK
+    from investmcp.yfinance_api import _DIVIDEND_CACHE, _DIVIDEND_CACHE_LOCK
 
     with _DIVIDEND_CACHE_LOCK:
         _DIVIDEND_CACHE.clear()
-    monkeypatch.setenv("FINANCE_MCP_CACHE_DIR", str(tmp_path / "reference-cache"))
+    monkeypatch.setenv("INVESTMCP_CACHE_DIR", str(tmp_path / "reference-cache"))
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api._dividend_now",
+        "investmcp.yfinance_api._dividend_now",
         lambda: datetime(2026, 10, 13, 12, tzinfo=timezone.utc),
     )
     yield
@@ -101,7 +101,7 @@ def fetch(monkeypatch, payloads):
         )
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: SimpleNamespace(_data=SimpleNamespace(get_raw_json=raw)),
     )
     result = YFinanceClient().get_dividend_schedule(
@@ -183,7 +183,7 @@ def test_kr_exchange_suffix_is_not_guessed(monkeypatch):
         return {"quoteSummary": {"error": {"code": "Not Found"}, "result": None}}
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: SimpleNamespace(_data=SimpleNamespace(get_raw_json=raw)),
     )
     data = YFinanceClient().get_dividend_schedule(
@@ -223,7 +223,7 @@ def test_calendar_invalid_or_unknown_date_is_not_zero_evidence(monkeypatch, valu
 def test_validated_event_free_window_resolves_ordinary_holding_days(monkeypatch):
     from test_toss_flow_inference import T0, T1, coverage, snapshot
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -255,7 +255,7 @@ def test_validated_event_free_window_resolves_ordinary_holding_days(monkeypatch)
 def test_heuristic_policy_cannot_be_relabelled_as_complete_proof(monkeypatch, legacy):
     from test_toss_flow_inference import T1, coverage, snapshot
 
-    from finance_mcp.toss_flow_inference import infer_toss_flows
+    from investmcp.toss_flow_inference import infer_toss_flows
 
     payloads = responses()
     payloads[0]["quoteSummary"]["result"][0]["calendarEvents"] = {}
@@ -274,7 +274,7 @@ def test_heuristic_policy_cannot_be_relabelled_as_complete_proof(monkeypatch, le
 def test_known_calendar_payment_resolves_through_default_provider(monkeypatch):
     from test_toss_flow_inference import T0, T1, coverage, snapshot, usd
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -348,7 +348,7 @@ def mock_history(monkeypatch, ex_dates, *, symbol="SYN", currency="USD", calenda
         )
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: SimpleNamespace(_data=SimpleNamespace(get_raw_json=raw)),
     )
     return seen
@@ -357,7 +357,7 @@ def mock_history(monkeypatch, ex_dates, *, symbol="SYN", currency="USD", calenda
 def test_all_historical_ex_dates_get_us_payment_windows_and_match(monkeypatch):
     from test_toss_flow_inference import coverage, snapshot, usd
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -403,7 +403,7 @@ def test_kr_expected_window_matches_december_april_and_quarterly_payment(
 ):
     from test_toss_flow_inference import coverage, snapshot
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -484,7 +484,7 @@ def test_announced_payment_overrides_window_and_preserves_event_identity(monkeyp
         },
     )
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api._dividend_now",
+        "investmcp.yfinance_api._dividend_now",
         lambda: datetime(2026, 10, 14, 12, tzinfo=timezone.utc),
     )
     row = client.get_dividend_schedule(
@@ -506,7 +506,7 @@ def test_daily_cache_projection_copy_and_rollover(monkeypatch):
     )
     assert second["rows"][0]["gross_per_share"] == "1.0" and len(seen) == 2
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api._dividend_now",
+        "investmcp.yfinance_api._dividend_now",
         lambda: datetime(2026, 10, 14, 12, tzinfo=timezone.utc),
     )
     YFinanceClient().get_dividend_schedule(
@@ -523,7 +523,7 @@ def test_failure_is_cached_per_day(monkeypatch):
         raise TimeoutError("synthetic reference unavailable")
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: SimpleNamespace(_data=SimpleNamespace(get_raw_json=raw)),
     )
     for end in ("2026-04-15", "2026-04-16", "2026-04-17"):
@@ -537,7 +537,7 @@ def test_failure_is_cached_per_day(monkeypatch):
 def test_overlapping_expected_windows_remain_ambiguous(monkeypatch):
     from test_toss_flow_inference import coverage, snapshot, usd
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -562,8 +562,8 @@ def test_overlapping_expected_windows_remain_ambiguous(monkeypatch):
 def test_production_cold_reference_never_waits_for_network(monkeypatch):
     from test_toss_flow_inference import T0, T1, snapshot
 
-    from finance_mcp.toss_flow_inference import dividend_schedule_provider
-    from finance_mcp.yfinance_api import _DIVIDEND_CACHE
+    from investmcp.toss_flow_inference import dividend_schedule_provider
+    from investmcp.yfinance_api import _DIVIDEND_CACHE
 
     entered, release = Event(), Event()
     calls = []
@@ -580,7 +580,7 @@ def test_production_cold_reference_never_waits_for_network(monkeypatch):
         )
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: SimpleNamespace(_data=SimpleNamespace(get_raw_json=raw)),
     )
     try:
@@ -618,7 +618,7 @@ def test_widened_windows_match_net_or_leave_zero_pending(
 ):
     from test_toss_flow_inference import coverage, snapshot
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -674,8 +674,8 @@ def test_absence_outside_estimated_windows_never_becomes_observed(
 ):
     from test_toss_flow_inference import coverage, snapshot
 
-    from finance_mcp.toss_dividends import ABSENCE_ESTIMATED
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_dividends import ABSENCE_ESTIMATED
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -753,7 +753,7 @@ def test_refresh_day_follows_the_market_calendar_not_utc(
 
     def get(when):
         monkeypatch.setattr(
-            "finance_mcp.yfinance_api._dividend_now",
+            "investmcp.yfinance_api._dividend_now",
             lambda: datetime.fromisoformat(when),
         )
         return YFinanceClient().get_dividend_schedule(
@@ -780,19 +780,19 @@ def test_refresh_day_follows_the_market_calendar_not_utc(
 
 
 def test_market_day_jobs_of_both_currencies_coexist_in_memory(monkeypatch):
-    from finance_mcp import yfinance_api
+    from investmcp import yfinance_api
 
     seen = mock_history(monkeypatch, ["2026-03-20"], symbol="005930.KS", currency="KRW")
     krw = yfinance_api.yf.Ticker
     seen += mock_history(monkeypatch, ["2026-03-20"])
     usd = yfinance_api.yf.Ticker
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: usd(symbol) if symbol == "SYN" else krw(symbol),
     )
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api._dividend_now",
+        "investmcp.yfinance_api._dividend_now",
         lambda: datetime(2026, 10, 16, 3, tzinfo=timezone.utc),
     )
     for _ in range(2):
@@ -892,7 +892,7 @@ def mock_live(
         return {"chart": {"error": None, "result": [row]}}
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api.yf.Ticker",
+        "investmcp.yfinance_api.yf.Ticker",
         lambda symbol: SimpleNamespace(_data=SimpleNamespace(get_raw_json=raw)),
     )
 
@@ -907,8 +907,8 @@ def mock_live(
 def test_price_only_etf_summary_relies_on_chart_dividend_events(
     monkeypatch, symbol, currency, ex_dates
 ):
-    from finance_mcp.toss_dividend_cache import load
-    from finance_mcp.toss_dividends import PAYMENT_POLICY
+    from investmcp.toss_dividend_cache import load
+    from investmcp.toss_dividends import PAYMENT_POLICY
 
     mock_live(monkeypatch, symbol=symbol, currency=currency, ex_dates=ex_dates)
     canonical = symbol.split(".")[0]
@@ -968,8 +968,8 @@ def test_dual_probe_failure_keeps_the_answering_suffix_and_its_reason(monkeypatc
 def test_recent_listing_is_proven_by_chart_first_trade_date(
     monkeypatch, symbol, currency, listed
 ):
-    from finance_mcp.toss_dividend_cache import load
-    from finance_mcp.toss_dividends import LISTING_BASIS
+    from investmcp.toss_dividend_cache import load
+    from investmcp.toss_dividends import LISTING_BASIS
 
     mock_live(monkeypatch, symbol=symbol, currency=currency, listed=listed)
     canonical = symbol.split(".")[0]
@@ -1000,7 +1000,7 @@ def test_recent_listing_is_proven_by_chart_first_trade_date(
     ],
 )
 def test_listing_date_contradictions_fail_closed(monkeypatch, case, reason):
-    from finance_mcp import yfinance_api
+    from investmcp import yfinance_api
 
     listed = None if case == "late-bars-without-listing" else "2026-01-05"
     late = {"late-bars-without-listing", "late-bars-after-listing"}
@@ -1024,7 +1024,7 @@ def test_listing_date_contradictions_fail_closed(monkeypatch, case, reason):
 
             return SimpleNamespace(_data=SimpleNamespace(get_raw_json=moved))
 
-        monkeypatch.setattr("finance_mcp.yfinance_api.yf.Ticker", shifted)
+        monkeypatch.setattr("investmcp.yfinance_api.yf.Ticker", shifted)
     data = YFinanceClient().get_dividend_schedule(
         "SYN", currency="USD", start="2026-10-10", end="2026-10-11"
     )
@@ -1039,7 +1039,7 @@ def test_local_evidence_before_the_listing_voids_the_listing_exception(
     """review v13 R1: Yahoo lists SYN on 10/6 with no dividends, yet it was held earlier."""
     from test_toss_flow_inference import coverage, fill, snapshot, usd
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -1111,7 +1111,7 @@ def test_local_evidence_before_the_listing_voids_the_listing_exception(
 
 def nav_version(when, accounts):
     """One complete NAV payload; accounts maps account -> (USD cash, SYN quantity or None)."""
-    from finance_mcp.daily_nav import TOSS_CASH_BASIS
+    from investmcp.daily_nav import TOSS_CASH_BASIS
 
     stamp = when.isoformat()
     return {
@@ -1169,9 +1169,9 @@ def test_primary_only_reader_sees_other_account_evidence_before_the_listing(
     tmp_path, monkeypatch, case
 ):
     """review v14 R1: a secondary account held SYN before its 10/6 listing; the query selects only primary."""
-    from finance_mcp.portfolio_ledger import LedgerStore
-    from finance_mcp.portfolio_store import NavStore
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.portfolio_ledger import LedgerStore
+    from investmcp.portfolio_store import NavStore
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         toss_interval_flows,
     )
@@ -1301,8 +1301,8 @@ def test_equity_zero_dividend_with_truncated_recent_bars_fails_closed(monkeypatc
 def test_chart_without_bars_stays_unresolved_and_cache_keeps_the_reason(
     monkeypatch, shape
 ):
-    from finance_mcp import yfinance_api
-    from finance_mcp.toss_dividend_cache import load
+    from investmcp import yfinance_api
+    from investmcp.toss_dividend_cache import load
 
     mock_live(
         monkeypatch,
@@ -1334,8 +1334,8 @@ def test_chart_without_bars_stays_unresolved_and_cache_keeps_the_reason(
 def test_cached_copy_without_a_proven_bar_span_is_not_evidence(monkeypatch, tamper):
     import json
 
-    from finance_mcp.toss_dividend_cache import load, path_for
-    from finance_mcp.toss_dividends import LISTING_BASIS
+    from investmcp.toss_dividend_cache import load, path_for
+    from investmcp.toss_dividends import LISTING_BASIS
 
     mock_history(monkeypatch, ["2026-03-20"])
     YFinanceClient().get_dividend_schedule(
@@ -1360,7 +1360,7 @@ def test_request_past_the_cached_day_clips_coverage_per_interval(monkeypatch):
 
     from test_toss_flow_inference import coverage, snapshot
 
-    from finance_mcp.toss_flow_inference import (
+    from investmcp.toss_flow_inference import (
         dividend_schedule_provider,
         infer_toss_flows,
     )
@@ -1368,7 +1368,7 @@ def test_request_past_the_cached_day_clips_coverage_per_interval(monkeypatch):
     mock_history(monkeypatch, ["2026-03-20"])
 
     monkeypatch.setattr(
-        "finance_mcp.yfinance_api._dividend_now",
+        "investmcp.yfinance_api._dividend_now",
         lambda: datetime(2026, 10, 16, 16, tzinfo=timezone.utc),
     )
     data = YFinanceClient().get_dividend_schedule(

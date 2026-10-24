@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import re
 
-DEFAULT_SEC_USER_AGENT = "finance-mcp/0.1.0 (contact: you@example.com)"
+DEFAULT_SEC_USER_AGENT = "investmcp/0.1.0 (contact: you@example.com)"
 
 TICKER_TECHNICAL_ENABLED = os.environ.get("TICKER_TECHNICAL_ENABLED", "true") in {
     "1",

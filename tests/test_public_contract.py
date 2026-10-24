@@ -12,8 +12,8 @@ from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.exceptions import ToolError
 from mcp.types import ToolAnnotations
 
-from finance_mcp import server
-from finance_mcp.demo import ACCOUNT_TOOLS, LOCAL_WRITERS
+from investmcp import server
+from investmcp.demo import ACCOUNT_TOOLS, LOCAL_WRITERS
 
 
 def required_arguments(name):
@@ -75,7 +75,7 @@ async def test_missing_account_configuration_is_clear(name):
     ),
 )
 async def test_demo_account_tools_have_no_network_and_are_labelled(name, monkeypatch):
-    monkeypatch.setenv("FINANCE_MCP_DEMO", "1")
+    monkeypatch.setenv("INVESTMCP_DEMO", "1")
     result = await server.mcp.call_tool(name, required_arguments(name))
     assert result.structuredContent["ok"], (name, result)
     assert result.structuredContent["meta"]["demo"] is True
@@ -84,7 +84,7 @@ async def test_demo_account_tools_have_no_network_and_are_labelled(name, monkeyp
 
 
 async def test_demo_pnl_uses_real_engine_and_known_synthetic_cashflows(monkeypatch):
-    monkeypatch.setenv("FINANCE_MCP_DEMO", "1")
+    monkeypatch.setenv("INVESTMCP_DEMO", "1")
     pnl = (await server.mcp.call_tool("get_trading_pnl", {})).structuredContent["data"][
         "by_symbol"
     ]
@@ -100,22 +100,22 @@ async def test_demo_pnl_uses_real_engine_and_known_synthetic_cashflows(monkeypat
 
 
 async def test_invalid_demo_arguments_are_validated(monkeypatch):
-    monkeypatch.setenv("FINANCE_MCP_DEMO", "1")
+    monkeypatch.setenv("INVESTMCP_DEMO", "1")
     with pytest.raises(ToolError):
         await server.mcp.call_tool("get_portfolio_returns", {"period": "invalid"})
 
 
 def test_data_directory_and_demo_snapshot_are_separate(tmp_path, monkeypatch):
-    from finance_mcp.kinvest_common import cache_dir
-    from finance_mcp.portfolio_store import default_db_path
+    from investmcp.kinvest_common import cache_dir
+    from investmcp.portfolio_store import default_db_path
 
-    monkeypatch.setenv("FINANCE_MCP_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("INVESTMCP_DATA_DIR", str(tmp_path))
     assert cache_dir() == tmp_path
     assert default_db_path() == tmp_path / "portfolio.db"
 
 
 def test_official_broker_mutation_endpoints_are_absent():
-    root = Path(__file__).resolve().parents[1] / "finance_mcp"
+    root = Path(__file__).resolve().parents[1] / "investmcp"
     for name in (
         "kis_api.py",
         "toss_api.py",
@@ -137,13 +137,13 @@ def test_official_broker_mutation_endpoints_are_absent():
                     "/uapi/domestic-stock/v1/trading/order-cash",
                     "/exchange",
                 }
-    from finance_mcp.crypto_futures_accounts import BINANCE_ALLOWLIST
+    from investmcp.crypto_futures_accounts import BINANCE_ALLOWLIST
 
     assert all(method == "GET" for method, _ in BINANCE_ALLOWLIST)
 
 
 def test_toss_send_rejects_mutation_before_network():
-    from finance_mcp.toss_api import TossClient
+    from investmcp.toss_api import TossClient
 
     client = TossClient("synthetic-id", "synthetic-secret")
     with pytest.raises(ValueError, match="Read-only"):

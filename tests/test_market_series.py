@@ -13,9 +13,9 @@ from zoneinfo import ZoneInfo
 import httpx
 import pytest
 
-from finance_mcp import market_series as ms
-from finance_mcp import server
-from finance_mcp.toss_api import TossClient
+from investmcp import market_series as ms
+from investmcp import server
+from investmcp.toss_api import TossClient
 
 NOW = datetime(2026, 10, 18, 0, tzinfo=timezone.utc)
 

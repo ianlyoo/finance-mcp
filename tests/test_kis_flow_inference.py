@@ -13,9 +13,9 @@ from decimal import Decimal
 
 import pytest
 
-from finance_mcp import interval_returns as ir
-from finance_mcp import kis_flow_inference as kf
-from finance_mcp.ledger_returns import scope_navs
+from investmcp import interval_returns as ir
+from investmcp import kis_flow_inference as kf
+from investmcp.ledger_returns import scope_navs
 
 KST = timezone(timedelta(hours=9))
 ACCOUNT = "kis:primary"
@@ -610,7 +610,7 @@ def test_missing_account_records_and_foreign_sources_never_pass():
 
 
 def store_versions(tmp_path, entries):
-    from finance_mcp.portfolio_store import NavStore
+    from investmcp.portfolio_store import NavStore
 
     store = NavStore(tmp_path / "nav.db")
     for day, entry in entries:

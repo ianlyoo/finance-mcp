@@ -4,9 +4,9 @@ from dataclasses import replace
 
 import pytest
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp import portfolio_model as model
-from finance_mcp.portfolio_model import FxRates, Holding, Transaction, TxType
+from investmcp import portfolio_engine as pe
+from investmcp import portfolio_model as model
+from investmcp.portfolio_model import FxRates, Holding, Transaction, TxType
 
 
 def amzn(**overrides):
@@ -375,7 +375,7 @@ def test_unknown_and_verified_zero_costs_are_distinct():
 def test_tool_money_envelopes_and_methodology(monkeypatch):
     from types import SimpleNamespace
 
-    from finance_mcp import server
+    from investmcp import server
 
     tx = amzn()
     holding = Holding(

@@ -14,8 +14,8 @@ from test_toss_nav import END as NAV_END
 from test_toss_nav import START as NAV_START
 from test_toss_nav import capture
 
-from finance_mcp import interval_returns as ir
-from finance_mcp.portfolio_engine import time_weighted_return
+from investmcp import interval_returns as ir
+from investmcp.portfolio_engine import time_weighted_return
 
 ACCOUNT = "toss:primary"
 PASSED = {
@@ -1093,7 +1093,7 @@ def test_real_scope_navs_path_with_captured_toss_rows(tmp_path, monkeypatch):
 
 
 def test_tool_block_is_additive_and_unsupported_scope_is_null(wired, monkeypatch):
-    from finance_mcp import server
+    from investmcp import server
 
     before = json.dumps(wired.navs, sort_keys=True)
     first = server.get_portfolio_performance(input_snapshot_ids=["synthetic"])
@@ -1123,7 +1123,7 @@ def test_tool_block_is_additive_and_unsupported_scope_is_null(wired, monkeypatch
 
 
 def test_tool_block_for_toss_scope_uses_stored_versions(wired, tmp_path, monkeypatch):
-    from finance_mcp import server
+    from investmcp import server
 
     rows = [capture(tmp_path, monkeypatch, day=day).row for day in (NAV_START, NAV_END)]
     wired.navs[:] = rows
@@ -1157,8 +1157,8 @@ def test_tool_block_for_toss_scope_uses_stored_versions(wired, tmp_path, monkeyp
 
 def primary_identity(db, nav_key, *, label="primary", bind=True):
     """operator-export identity rows only (salt, import, alias); no flow coverage rows."""
-    from finance_mcp.external_flows import SCHEMA
-    from finance_mcp.portfolio_ledger import LedgerStore
+    from investmcp.external_flows import SCHEMA
+    from investmcp.portfolio_ledger import LedgerStore
 
     store = LedgerStore(db)
     with store.transaction() as conn:
@@ -1185,7 +1185,7 @@ def primary_identity(db, nav_key, *, label="primary", bind=True):
 def test_toss_primary_ledgerless_selects_toss_primary_without_flow_coverage(
     wired, tmp_path, monkeypatch
 ):
-    from finance_mcp import ledger_returns, server
+    from investmcp import ledger_returns, server
 
     rows = [capture(tmp_path, monkeypatch, day=day).row for day in (NAV_START, NAV_END)]
     db = tmp_path / "identity.db"
@@ -1242,7 +1242,7 @@ def test_toss_primary_ledgerless_selects_toss_primary_without_flow_coverage(
 
 
 def bind_elsewhere(db, key):
-    from finance_mcp.portfolio_ledger import LedgerStore
+    from investmcp.portfolio_ledger import LedgerStore
 
     store = LedgerStore(db)
     with store.transaction() as conn:
@@ -1266,7 +1266,7 @@ def bind_elsewhere(db, key):
 def test_toss_primary_ledgerless_without_identity_is_unavailable_never_secondary(
     wired, tmp_path, monkeypatch, case
 ):
-    from finance_mcp import server
+    from investmcp import server
 
     rows = [capture(tmp_path, monkeypatch, day=day).row for day in (NAV_START, NAV_END)]
     db = tmp_path / "identity.db"
@@ -1309,7 +1309,7 @@ def test_toss_primary_ledgerless_without_identity_is_unavailable_never_secondary
         with sqlite3.connect(db) as conn:
             conn.execute("DROP TABLE ledger_external_export_imports")
     elif case == "no_salt":
-        from finance_mcp.external_flows import SCHEMA
+        from investmcp.external_flows import SCHEMA
 
         with sqlite3.connect(db) as conn:
             conn.execute("CREATE TABLE ledger_state(key TEXT PRIMARY KEY, value BLOB)")
@@ -1353,7 +1353,7 @@ def test_toss_primary_ledgerless_without_identity_is_unavailable_never_secondary
 
 
 def fill_coverage(db):
-    from finance_mcp.portfolio_ledger import LedgerStore
+    from investmcp.portfolio_ledger import LedgerStore
 
     store = LedgerStore(db)
     for account in ("toss:primary", "toss:secondary"):
@@ -1387,7 +1387,7 @@ def complete_schedule(snapshots, start, end):
 
 def w1_schedule(status):
     """Stand-ins for the production provider (toss_flow_inference.dividend_schedule_provider) outputs."""
-    from finance_mcp.toss_dividends import ABSENCE_ESTIMATED, PAYMENT_POLICY
+    from investmcp.toss_dividends import ABSENCE_ESTIMATED, PAYMENT_POLICY
 
     proof = {
         "symbol": "SYN",
@@ -1421,7 +1421,7 @@ def w1_schedule(status):
 def test_tool_block_runs_w1_toss_interval_flows_on_stored_evidence(
     wired, tmp_path, monkeypatch
 ):
-    from finance_mcp import server
+    from investmcp import server
 
     rows = [capture(tmp_path, monkeypatch, day=day).row for day in (NAV_START, NAV_END)]
     db = tmp_path / "synthetic-nav.db"
@@ -1433,7 +1433,7 @@ def test_tool_block_runs_w1_toss_interval_flows_on_stored_evidence(
     )
     before = db.read_bytes()
 
-    from finance_mcp import toss_flow_inference
+    from investmcp import toss_flow_inference
 
     def no_schedule(*args, **kwargs):
         raise AssertionError("dividend schedule fetched on the tool path")
@@ -1560,10 +1560,10 @@ def test_live_zero_binance_assets_keep_crypto_returns_in_both_tools(
     from test_crypto_nav_capture import NOW, live_shape, nav, quote_client, zero_asset
     from test_crypto_nav_capture import capture as crypto_capture
 
-    from finance_mcp import ledger_returns as lr
-    from finance_mcp.crypto_flow_intervals import EVIDENCE_PAD
-    from finance_mcp.portfolio_ledger import LedgerStore
-    from finance_mcp.portfolio_store import NavStore
+    from investmcp import ledger_returns as lr
+    from investmcp.crypto_flow_intervals import EVIDENCE_PAD
+    from investmcp.portfolio_ledger import LedgerStore
+    from investmcp.portfolio_store import NavStore
 
     path, rows = tmp_path / "crypto.db", []
     for day in range(2):
@@ -1718,7 +1718,7 @@ def w1_snapshot(day, krw, usd="0", quantity="10"):
 
 
 def test_w1_conditional_zero_flows_are_estimates_never_verified():
-    from finance_mcp.toss_flow_inference import infer_toss_flows
+    from investmcp.toss_flow_inference import infer_toss_flows
 
     snapshots = [w1_snapshot("2026-10-12", "1000"), w1_snapshot("2026-10-13", "1000")]
     coverage = [
@@ -1842,7 +1842,7 @@ def test_snapshot_binding_requires_exact_id_instant_and_version():
 def test_tool_block_with_pinned_versions_never_borrows_representative_flows(
     wired, tmp_path, monkeypatch
 ):
-    from finance_mcp import server
+    from investmcp import server
 
     rows = [capture(tmp_path, monkeypatch, day=day).row for day in (NAV_START, NAV_END)]
     db = tmp_path / "synthetic-nav.db"
@@ -1851,7 +1851,7 @@ def test_tool_block_with_pinned_versions_never_borrows_representative_flows(
     monkeypatch.setattr(
         server.portfolio_engine, "resolve_period", lambda _: (NAV_START, NAV_END)
     )
-    from finance_mcp import toss_flow_inference
+    from investmcp import toss_flow_inference
 
     monkeypatch.setattr(
         toss_flow_inference, "dividend_schedule_provider", w1_schedule("estimated")
@@ -2329,7 +2329,7 @@ def test_unresolved_records_keep_provider_reasons(tmp_path):
 
 
 def test_production_tool_path_passes_no_dividend_provider(monkeypatch):
-    from finance_mcp import toss_flow_inference
+    from investmcp import toss_flow_inference
 
     assert ir._provider("toss") is toss_flow_inference.toss_interval_flows
     seen = []

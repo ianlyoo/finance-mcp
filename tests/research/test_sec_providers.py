@@ -110,7 +110,7 @@ def client_with(payloads):
         return httpx.Response(200, json=response)
 
     return SECClient(
-        user_agent="finance-mcp/0.1.0 (contact: you@example.com)",
+        user_agent="investmcp/0.1.0 (contact: you@example.com)",
         transport=httpx.MockTransport(handler),
         clock=lambda: CLOCK,
     ), requests
@@ -576,7 +576,7 @@ def test_sec_declared_user_agent_no_hidden_retries_and_failures(status):
     assert len(requests) == 1
     assert (
         requests[0].headers["User-Agent"]
-        == "finance-mcp/0.1.0 (contact: you@example.com)"
+        == "investmcp/0.1.0 (contact: you@example.com)"
     )
     assert client.failures[0]["http_status"] == status
 
@@ -612,7 +612,7 @@ def test_research_provider_packages_are_independent_of_finance_implementations(
     monkeypatch,
 ):
     root = Path(__file__).resolve().parents[2]
-    forbidden = {"finance_mcp"}
+    forbidden = {"investmcp"}
     original = builtins.__import__
 
     def guarded(name, *args, **kwargs):

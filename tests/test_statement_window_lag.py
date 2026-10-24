@@ -5,12 +5,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from finance_mcp import portfolio_engine as engine
-from finance_mcp import server
-from finance_mcp import statement_import as m
-from finance_mcp.portfolio_model import FxRates, Holding, Transaction, TxType
-from finance_mcp.portfolio_sources import Collection
-from finance_mcp.toss_accounts import TossAccountRegistry, TossCredentials
+from investmcp import portfolio_engine as engine
+from investmcp import server
+from investmcp import statement_import as m
+from investmcp.portfolio_model import FxRates, Holding, Transaction, TxType
+from investmcp.portfolio_sources import Collection
+from investmcp.toss_accounts import TossAccountRegistry, TossCredentials
 
 
 def trade(side, day, qty, price, key, symbol="SYN", settle=None):

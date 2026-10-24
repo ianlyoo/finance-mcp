@@ -4,8 +4,8 @@ from dataclasses import replace
 
 import pytest
 
-from finance_mcp import portfolio_engine as pe
-from finance_mcp.portfolio_model import (
+from investmcp import portfolio_engine as pe
+from investmcp.portfolio_model import (
     CashBalance,
     FxRates,
     Holding,
@@ -14,7 +14,7 @@ from finance_mcp.portfolio_model import (
     kis_overseas_cash,
     toss_cash,
 )
-from finance_mcp.portfolio_sources import Collection
+from investmcp.portfolio_sources import Collection
 
 NAVS = [
     {"snapshot_date": "2026-10-02", "total_value_krw": 100_000_000},
@@ -193,7 +193,7 @@ def test_toss_buying_power_and_missing_settlement_fields_are_unknown():
 def test_performance_distinguishes_failed_and_successfully_empty_sources(
     monkeypatch, status, expected
 ):
-    from finance_mcp import server
+    from investmcp import server
 
     empty = Collection(health={"synthetic": {"status": status}})
 
@@ -221,7 +221,7 @@ def test_performance_distinguishes_failed_and_successfully_empty_sources(
 
 
 def test_history_has_limitations_and_unavailable_verified_metrics(monkeypatch):
-    from finance_mcp import server
+    from investmcp import server
 
     class Store:
         def range(self, *args):
@@ -373,7 +373,7 @@ def test_cash_field_separation_and_missing_endpoints():
     "tool_name", ["get_portfolio_performance", "get_portfolio_history"]
 )
 def test_tools_record_explicit_zero_confirmation_scope(monkeypatch, tool_name):
-    from finance_mcp import server
+    from investmcp import server
 
     navs = [
         {"snapshot_date": f"2026-10-0{i}", "total_value_krw": 100_000_000 + i}

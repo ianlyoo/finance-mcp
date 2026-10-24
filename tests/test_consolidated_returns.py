@@ -18,12 +18,12 @@ from test_kis_flow_inference import account as kis_account
 from test_kis_flow_inference import nav as kis_nav
 from test_kis_flow_inference import stamp as kis_stamp
 
-from finance_mcp import interval_returns as ir
-from finance_mcp import kis_flow_inference as kf
-from finance_mcp.crypto_flow_intervals import EVIDENCE_PAD, crypto_interval_flows
-from finance_mcp.ledger_returns import scope_navs
-from finance_mcp.portfolio_ledger import LedgerStore
-from finance_mcp.portfolio_store import NavStore
+from investmcp import interval_returns as ir
+from investmcp import kis_flow_inference as kf
+from investmcp.crypto_flow_intervals import EVIDENCE_PAD, crypto_interval_flows
+from investmcp.ledger_returns import scope_navs
+from investmcp.portfolio_ledger import LedgerStore
+from investmcp.portfolio_store import NavStore
 
 DAYS = [(T0 + timedelta(days=i)).date().isoformat() for i in range(4)]
 WEIGHT = Decimal(1439) / Decimal(1440)
@@ -721,7 +721,7 @@ def test_consolidated_live_mode_returns_and_risk_are_the_stored_m3_ones(
 
 
 def test_scope_configuration_uses_only_explicit_environment(monkeypatch):
-    from finance_mcp import server
+    from investmcp import server
 
     for name in (
         "HYPERLIQUID_ACCOUNT_ADDRESSES",
