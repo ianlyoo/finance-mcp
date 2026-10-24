@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finance-mcp"
+version = "0.1.0"
+description = "Read-only accounts, public market data and ticker research in one MCP server"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "ianlyoo"}]
+dependencies = ["mcp>=1.26,<2", "httpx>=0.28", "cryptography>=50.0.2", "yfinance>=1.2", "uvicorn>=0.40", "pypdf==6.19.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=9.1.1", "pytest-asyncio>=1.4.0", "ruff>=0.16.9"]
+
+[project.scripts]
+finance-mcp = "finance_mcp.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ianlyoo/finance-mcp"
+
+[tool.setuptools.packages.find]
+include = ["finance_mcp*", "ticker_engine*"]
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+"finance_mcp/server.py" = ["E402"]
